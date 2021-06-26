@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <script src="https://platform.twitter.com/widgets.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <style>
+
+    .links line {
+      stroke: #999;
+      stroke-opacity: 0.8;
+      stroke-width: 2px;
+    }
+
+    line.reply {
+      stroke: #999;
+    }
+
+    line.retweet {
+      stroke-dasharray: 5;
+    }
+
+    line.quote {
+      stroke-dasharray: 5;
+    }
+
+    .nodes circle {
+      stroke: red;
+      fill: red;
+      stroke-width: 1.5px;
+    }
+
+    circle.retweet {
+      fill: white;
+      stroke: #999;
+    }
+
+    circle.reply {
+      fill: #999;
+      stroke: #999;
+    }
+
+    circle.quote {
+      fill: yellow;
+      stroke: yellow;
+    }
+
+    #graph {
+      width: 99vw;
+      height: 99vh;
+    }
+
+    #tweet {
+      position: absolute;
+      left: 100px;
+      top: 150px;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <svg id="graph"></svg>
+  <div id="tweet"></div>
+
+  <script>
+
+    var width = $(window).width();
+    var height = $(window).height();
+
+    var svg = d3.select("svg")
+        .attr("height", height)
+        .attr("width", width);
+
+    var color = d3.scaleOrdinal(d3.schemeCategory20c);
+
+    var simulation = d3.forceSimulation()
+        .velocityDecay(0.6)
+        .force('x', d3.forceX(width / 2).strength(0.1))
+        .force('y', d3.forceY(height / 2).strength(0.1))
+        .force("link", d3.forceLink().id(function(d) { return d.id; }))
+        .force("charge", d3.forceManyBody())
+        .force("center", d3.forceCenter(width / 2, height / 2));
+
+    var graph = __GRAPH_DATA__;
+
+    var link = svg.append("g")
+        .attr("class", "links")
+      .selectAll("line")
+      .data(graph.links)
+      .enter().append("line")
+        .attr("class", function(d) { return d.type; });
+
+    var node = svg.append("g")
+        .attr("class", "nodes")
+      .selectAll("circle")
+      .data(graph.nodes)
+      .enter().append("circle")
+        .attr("r", 5)
+        .attr("class", function(d) { return d.type; })
+        .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+
+    node.append("title")
+        .text(function(d) { return d.id; });
+
+    node.on("click", function(d) {
+      $("#tweet").empty();
+
+      var rect = this.getBoundingClientRect();
+      var paneHeight = d.type == "retweet" ? 50 : 200;
+      var paneWidth = d.type == "retweet" ? 75 : 500;
+
+      var left = rect.x - paneWidth / 2;
+      if (rect.y > height / 2) {
+        var top = rect.y - paneHeight;
+      } else {
+        var top = rect.y + 10;
+      }
+
+      var tweet = $("#tweet");
+      tweet.css({left: left, top: top});
+
+      if (d.type == "retweet") {
+        twttr.widgets.createFollowButton(d.screen_name, tweet[0], {size: "large"});
+      } else {
+        twttr.widgets.createTweet(d.id, tweet[0], {conversation: "none"});
+      }
+
+      d3.event.stopPropagation();
+
+    });
+
+    svg.on("click", function(d) {
+      $("#tweet").empty();
+    });
+
+    simulation
+        .nodes(graph.nodes)
+        .on("tick", ticked);
+
+    simulation.force("link")
+        .links(graph.links);
+
+    function ticked() {
+      link
+          .attr("x1", function(d) { return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { return d.target.x; })
+          .attr("y2", function(d) { return d.target.y; });
+
+      node
+          .attr("cx", function(d) { return d.x; })
+          .attr("cy", function(d) { return d.y; });
+    }
+
+    function dragstarted(d) {
+      if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+      d.fx = d.x;
+      d.fy = d.y;
+    }
+
+    function dragged(d) {
+      d.fx = d3.event.x;
+      d.fy = d3.event.y;
+    }
+
+    function dragended(d) {
+      if (!d3.event.active) simulation.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
+    }
+
+  </script>
+
+</body>
+
+</html>

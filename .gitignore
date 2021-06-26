@@ -1,0 +1,7 @@
+.eggs
+dist
+twarc_network.egg-info
+Pipfile
+__pycache__
+build
+*.log
