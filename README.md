@@ -53,13 +53,14 @@ or CSV edge list:
 
 ## Changing the Nodes
 
-If you would rather have the network oriented around nodes that are tweets
-instead of users:
+Tweets can be connected together as replies, quotes and retweets. If you would
+like to see the network oriented around nodes that are tweets instead of users
+you can:
 
     twarc2 network tweets.jsonl --nodes tweets network.html
 
-If you would rather have the network oriented around nodes that are
-hashtags:
+Hashtags can can be connected when they are used together in a tweet. So you
+can visualize a network where nodes are hashtags:
 
     twarc2 network tweets.jsonl --nodes hashtags > network.html
 
