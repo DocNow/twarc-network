@@ -2,10 +2,10 @@
 
 <img height=300 src="https://raw.githubusercontent.com/docnow/twarc-network/main/images/d3.png" />
 
-twarc-network builds a reply, quote and retweet network from a file of
-tweets that you've collected using twarc. It will write out the network as
-a [gexf], [dot], json or html file. It uses [networkx] for the graph
-model, [pydotplus] for dot output, and [d3] for the html presentation. 
+*twarc-network* builds a reply, quote and retweet network from a file of tweets
+that you've collected using twarc. It will write out the network as a [gexf],
+[dot], json or html file. It uses [networkx] for the graph model, [pydot]
+for dot output, and [d3] for the html presentation. 
 
 If you know CSS you can look at the generated HTML file and modify the style to
 suit your needs. If you come up with a more pleasing representation please send
@@ -83,3 +83,4 @@ larger than 10:
 [networkx]: https://networkx.org/
 [twarc]: https://github.com/docnow/twarc
 [gml]: https://en.wikipedia.org/wiki/Graph_Modelling_Language
+[pydot]: https://pypi.org/project/pydot/
