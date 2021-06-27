@@ -1,3 +1,4 @@
+import io
 import json
 import time
 import click
@@ -11,8 +12,7 @@ from networkx import nx_pydot
 from twarc import ensure_flattened
 
 @click.command()
-@click.option('--format', type=click.Choice(['html', 'json', 'gexf', 'dot']),
-        default='html', help='Output format for the network')
+@click.option('--format', type=click.Choice(['html', 'json', 'gexf', 'dot', 'csv', 'gml']), default='html', help='Output format for the network')
 @click.option('--nodes', type=click.Choice(['users', 'tweets', 'hashtags']),
         default='users', help='What type of nodes to use in the network')
 @click.option('--min-subgraph-size', type=int, help='Minimum subgraph size to include')
@@ -21,33 +21,44 @@ from twarc import ensure_flattened
 @click.argument('outfile', type=click.File('w'), default='-')
 def network(format, nodes, infile, outfile, min_subgraph_size, max_subgraph_size):
     """
-    Generates a network visualization of tweets as an HTML, JSON, GEXF or DOT
-    file.
+    Generates a network graph of tweets as GEXF, GML, DOT, JSON, HTML, CSV. 
     """
-    g = get_graph(infile, nodes)
 
-    '''
+    # unfortunately it's not possible to use connected_component_subgraphs 
+    # with directed graphs, so if the user wants to limit subgraph size
+    # we will need to use a regular graph and not a directed graph
+
     if min_subgraph_size or max_subgraph_size:
-        g_copy = G.copy()
-        for sg in networkx.connected_component_subgraphs(G):
+        g = get_graph(infile, nodes, digraph=False)
+    else:
+        g = get_graph(infile, nodes, digraph=True)
+
+    # if the user wants to limit subgraph min/max sizes
+    if min_subgraph_size or max_subgraph_size:
+        g_copy = g.copy()
+        for components in networkx.connected_components(g):
+            sg = g.subgraph(components)
+            # for sg in networkx.connected_component_subgraphs(G):
             if min_subgraph_size and len(sg) < min_subgraph_size:
                 g_copy.remove_nodes_from(sg.nodes())
             elif max_subgraph_size and len(sg) > max_subgraph_size:
                 g_copy.remove_nodes_from(sg.nodes())
         g = g_copy
-    '''
 
     if format == "gexf":
-        networkx.write_gexf(g, outfile)
+        outfile.write(bytes_to_str(networkx.write_gexf, g))
 
     elif format == "gml":
-        networkx.write_gml(g, outfile)
+        outfile.write(bytes_to_str(networkx.write_gml, g))
 
     elif format == "dot":
         nx_pydot.write_dot(g, outfile)
 
     elif format == "json":
         json.dump(to_json(g), outfile, indent=2)
+
+    elif format == "csv":
+        outfile.write(bytes_to_str(networkx.write_edgelist, g))
 
     elif format == "html":
         graph_data = json.dumps(to_json(g), indent=2)
@@ -57,8 +68,12 @@ def network(format, nodes, infile, outfile, min_subgraph_size, max_subgraph_size
         outfile.write(html)
 
 
-def get_graph(infile, nodes_type):
-    g = networkx.DiGraph()
+def get_graph(infile, nodes_type, digraph=True):
+    if digraph:
+        g = networkx.DiGraph()
+    else:
+        g = networkx.Graph()
+
     for line in infile:
         for t in ensure_flattened(json.loads(line)):
 
@@ -149,3 +164,11 @@ def get_edge_type(ref):
     else:
         raise Exception(f'unknown reference type: {ref["type"]}')
 
+def bytes_to_str(f, g):
+    # networkx output functions want to write to a handle as bytes
+    # but click.File is expecting a string. This function takes the
+    # networkx function and writes the bytes to a BytesIO object and
+    # and then returns that object as a string.
+    out = io.BytesIO()  
+    f(g, out)
+    return out.getvalue().decode('utf-8')
