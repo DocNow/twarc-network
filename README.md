@@ -1,6 +1,6 @@
 # twarc-network 
 
-<img style="float: left; height: 300px;" src="https://raw.githubusercontent.com/docnow/twarc-network/main/images/d3.png" />
+<img height=300 src="https://raw.githubusercontent.com/docnow/twarc-network/main/images/d3.png" />
 
 twarc-network builds a reply, quote and retweet network from a file of
 tweets that you've collected using twarc. It will write out the network as
