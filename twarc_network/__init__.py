@@ -46,10 +46,10 @@ def network(format, nodes, infile, outfile, min_subgraph_size, max_subgraph_size
         g = g_copy
 
     if format == "gexf":
-        outfile.write(bytes_to_str(networkx.write_gexf, g))
+        outfile.write(nxstr(networkx.write_gexf, g))
 
     elif format == "gml":
-        outfile.write(bytes_to_str(networkx.write_gml, g))
+        outfile.write(nxstr(networkx.write_gml, g))
 
     elif format == "dot":
         nx_pydot.write_dot(g, outfile)
@@ -58,7 +58,7 @@ def network(format, nodes, infile, outfile, min_subgraph_size, max_subgraph_size
         json.dump(to_json(g), outfile, indent=2)
 
     elif format == "csv":
-        outfile.write(bytes_to_str(networkx.write_edgelist, g))
+        outfile.write(nxstr(networkx.write_edgelist, g, delimiter=','))
 
     elif format == "html":
         graph_data = json.dumps(to_json(g), indent=2)
@@ -164,11 +164,12 @@ def get_edge_type(ref):
     else:
         raise Exception(f'unknown reference type: {ref["type"]}')
 
-def bytes_to_str(f, g):
-    # networkx output functions want to write to a handle as bytes
+def nxstr(f, *args, **kwargs):
+    # networkx output functions want to write to a file as bytes
     # but click.File is expecting a string. This function takes the
-    # networkx function and writes the bytes to a BytesIO object and
-    # and then returns that object as a string.
+    # networkx function and parameters and writes the bytes to a 
+    # BytesIO object to return it as a string.
     out = io.BytesIO()  
-    f(g, out)
+    args = args + (out,)
+    f(*args, **kwargs)
     return out.getvalue().decode('utf-8')
