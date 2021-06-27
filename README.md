@@ -7,10 +7,11 @@ that you've collected using twarc. It will write out the network as a [gexf],
 [dot], json or html file. It uses [networkx] for the graph model, [pydot]
 for dot output, and [d3] for the html presentation. 
 
-If you know CSS you can look at the generated HTML file and modify the style to
+If you know CSS you can hack at the generated HTML file to modify the style to
 suit your needs. If you come up with a more pleasing representation please send
-a pull request. Exporting as a GEXF or GML file will allow you to import the
-data into Gephi or Cytoscape for further analysis and visualization.
+a pull request! Exporting as a gexf, gml or dot file will allow you to import
+the data into tools like [Gephi], [Cytoscape] and [GraphViz] for further
+analysis and visualization.
 
 ## Install
 
@@ -84,3 +85,6 @@ larger than 10:
 [twarc]: https://github.com/docnow/twarc
 [gml]: https://en.wikipedia.org/wiki/Graph_Modelling_Language
 [pydot]: https://pypi.org/project/pydot/
+[Gephi]: https://gephi.org/
+[Cytoscape]: https://cytoscape.org/
+[GraphViz]: https://graphviz.org/
