@@ -5,7 +5,7 @@ with open("README.md") as f:
 
 setuptools.setup(
     name='twarc-network',
-    version='0.0.3',
+    version='0.0.4',
     url='https://github.com/docnow/twarc-network',
     author='Ed Summers',
     author_email='ehs@pobox.com',
@@ -16,6 +16,7 @@ setuptools.setup(
     python_requires='>=3.3',
     install_requires=['twarc', 'networkx', 'pydot'],
     setup_data={"twarc_network": ["twarc_network/index.html"]},
+    package_data={"twarc_network": ["index.html"]},
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     entry_points='''
