@@ -78,6 +78,7 @@ def get_graph(infile, nodes_type, digraph=True):
         for t in ensure_flattened(json.loads(line)):
 
             from_id = t['id']
+
             from_user = t['author']['username']
             from_user_id = t['author']['id']
 
@@ -87,14 +88,18 @@ def get_graph(infile, nodes_type, digraph=True):
 
             created_at_date = time.strftime('%d/%m/%Y %H:%M:%S', time.strptime(t["created_at"],'%Y-%m-%dT%H:%M:%S.%fZ'))
 
+            # get referenced tweets but ignore ones that have been deleted and
+            # have no author stanza
+            refs = filter(lambda r: 'author' in r, t.get('referenced_tweets', []))
+
             if nodes_type == 'users':
-                for ref in t.get('referenced_tweets', []):
+                for ref in refs:
                     to_user = ref['author']['username']
                     edge_type = get_edge_type(ref)
                     add(g, nodes_type, from_user, from_id, to_user, None, edge_type, created_at_date)
 
             elif nodes_type == 'tweets':
-                for ref in t.get('referenced_tweets', []):
+                for ref in refs:
                     to_id = ref['id']
                     to_user = ref['author']['username']
                     edge_type = get_edge_type(ref)
