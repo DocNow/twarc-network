@@ -139,6 +139,11 @@ def get_graph(infile, nodes_type, digraph=True):
                     )
 
             elif nodes_type == "hashtags":
+
+                # some tweets apparently lack an entities stanza?
+                if "entities" not in t:
+                    continue
+
                 hashtags = map(lambda h: h["tag"], t["entities"].get("hashtags", []))
                 # list of all possible hashtag pairs
                 hashtag_pairs = itertools.combinations(hashtags, 2)

@@ -78,7 +78,3 @@ def test_hashtags():
     graph = json.loads(result.output)
     assert len(graph['nodes']) == 383 
 
-
-
-
-
