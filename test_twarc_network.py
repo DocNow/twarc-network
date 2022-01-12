@@ -44,7 +44,7 @@ def test_dot():
     graphs = pydot.graph_from_dot_data(result.output)
     assert len(graphs) == 1
     graph = graphs[0]
-    assert len(graph.get_node_list()) == 484
+    assert len(graph.get_node_list()) == 485
     assert len(graph.get_edge_list()) == 391
 
 
