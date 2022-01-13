@@ -2,7 +2,6 @@ import io
 import json
 import time
 import click
-import pydot
 import networkx
 import itertools
 
