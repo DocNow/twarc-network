@@ -180,8 +180,8 @@ def add_user_edge(g, from_user, to_user, edge_type, created_at):
 
 
 def add_tweet_edge(g, from_user, from_id, to_user, to_id, edge_type, created_at):
-    g.add_node(from_id, screen_name=from_user)
-    g.add_node(to_id, screen_name=to_user)
+    g.add_node(from_id, screen_name=from_user, start_date=created_at)
+    g.add_node(to_id, screen_name=to_user, start_date=created_at)
 
     g.add_edge(from_id, to_id, type=edge_type)
 
