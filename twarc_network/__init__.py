@@ -169,7 +169,7 @@ def add(g, nodes_type, from_user, from_id, to_user, to_id, edge_type, created_at
     # storing start_date will allow for timestamps for gephi timeline, where nodes
     # will appear on screen at their start date and stay on forever after
 
-    if nodes_type in ["users", "hashtags"] and to_user:
+    if nodes_type == "hashtags" and to_user:
         g.add_node(from_user, screen_name=from_user, start_date=created_at)
         g.add_node(to_user, screen_name=to_user, start_date=created_at)
 
@@ -186,6 +186,24 @@ def add(g, nodes_type, from_user, from_id, to_user, to_id, edge_type, created_at
         else:
             g.add_node(to_id)
         g.add_edge(from_id, to_id, type=edge_type)
+
+    elif nodes_type == "users" and to_user:
+        g.add_node(from_user, screen_name=from_user, start_date=created_at)
+        g.add_node(to_user, screen_name=to_user, start_date=created_at)
+
+        if g.has_edge(from_user, to_user):
+            weights = g[from_user][to_user]
+        else:
+            g.add_edge(from_user, to_user)
+            weights = {
+                "weight":  0,
+                "retweet": 0,
+                "reply":   0,
+                "quote":   0,
+            }
+        weights["weight"]  += 1
+        weights[edge_type] += 1
+        g[from_user][to_user].update(weights)
 
 
 def to_json(g):
