@@ -147,7 +147,6 @@ def get_graph(infile, nodes_type, digraph=True):
                         g,
                         "#" + ht1,
                         "#" + ht2,
-                        "hashtag",
                         created_at_date,
                     )
 
@@ -189,7 +188,7 @@ def add_tweet_edge(g, from_user, from_id, to_user, to_id, edge_type, created_at)
     g.add_edge(from_id, to_id, type=edge_type)
 
 
-def add_hashtag_edge(g, from_hashtag, to_hashtag, edge_type, created_at):
+def add_hashtag_edge(g, from_hashtag, to_hashtag, created_at):
     g.add_node(from_hashtag, start_date=created_at)
     g.add_node(to_hashtag, start_date=created_at)
 
@@ -197,7 +196,7 @@ def add_hashtag_edge(g, from_hashtag, to_hashtag, edge_type, created_at):
         weight = g[from_hashtag][to_hashtag]["weight"] + 1
     else:
         weight = 1
-    g.add_edge(from_hashtag, to_hashtag, type=edge_type, weight=weight)
+    g.add_edge(from_hashtag, to_hashtag, weight=weight)
 
 
 def to_json(g):
