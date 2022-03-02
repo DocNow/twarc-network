@@ -190,8 +190,8 @@ def add_tweet_edge(g, from_user, from_id, to_user, to_id, edge_type, created_at)
 
 
 def add_hashtag_edge(g, from_user, to_user, edge_type, created_at):
-    g.add_node(from_user, screen_name=from_user, start_date=created_at)
-    g.add_node(to_user, screen_name=to_user, start_date=created_at)
+    g.add_node(from_user, start_date=created_at)
+    g.add_node(to_user, start_date=created_at)
 
     if g.has_edge(from_user, to_user):
         weight = g[from_user][to_user]["weight"] + 1
