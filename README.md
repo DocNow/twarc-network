@@ -2,6 +2,8 @@
 
 <img height=300 src="https://raw.githubusercontent.com/docnow/twarc-network/main/images/d3.png" />
 
+[![Build Status](https://github.com/docnow/twarc-network/workflows/tests/badge.svg)](https://github.com/DocNow/twarc-network/actions/workflows/main.yml)
+
 *twarc-network* builds a reply, quote and retweet network from a file of tweets
 that you've collected using twarc. It will write out the network as a [gexf],
 [gml], [dot], json, csv or html file. It uses [networkx] for the graph model,
