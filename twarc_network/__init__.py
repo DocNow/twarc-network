@@ -110,13 +110,10 @@ def get_graph(infile, nodes_type, digraph=True):
                 for ref in refs:
                     to_user = ref["author"]["username"]
                     edge_type = get_edge_type(ref)
-                    add(
+                    add_user_edge(
                         g,
-                        nodes_type,
                         from_user,
-                        from_id,
                         to_user,
-                        None,
                         edge_type,
                         created_at_date,
                     )
@@ -126,9 +123,8 @@ def get_graph(infile, nodes_type, digraph=True):
                     to_id = ref["id"]
                     to_user = ref["author"]["username"]
                     edge_type = get_edge_type(ref)
-                    add(
+                    add_tweet_edge(
                         g,
-                        nodes_type,
                         from_user,
                         from_id,
                         to_user,
@@ -147,14 +143,10 @@ def get_graph(infile, nodes_type, digraph=True):
                 # list of all possible hashtag pairs
                 hashtag_pairs = itertools.combinations(hashtags, 2)
                 for ht1, ht2 in hashtag_pairs:
-                    add(
+                    add_hashtag_edge(
                         g,
-                        nodes_type,
                         "#" + ht1,
-                        None,
                         "#" + ht2,
-                        None,
-                        "hashtag",
                         created_at_date,
                     )
 
@@ -164,46 +156,45 @@ def get_graph(infile, nodes_type, digraph=True):
     return g
 
 
-def add(g, nodes_type, from_user, from_id, to_user, to_id, edge_type, created_at=None):
+def add_user_edge(g, from_user, to_user, edge_type, created_at):
 
     # storing start_date will allow for timestamps for gephi timeline, where nodes
     # will appear on screen at their start date and stay on forever after
 
-    if nodes_type == "hashtags" and to_user:
-        g.add_node(from_user, screen_name=from_user, start_date=created_at)
-        g.add_node(to_user, screen_name=to_user, start_date=created_at)
+    g.add_node(from_user, screen_name=from_user, start_date=created_at)
+    g.add_node(to_user, screen_name=to_user, start_date=created_at)
 
-        if g.has_edge(from_user, to_user):
-            weight = g[from_user][to_user]["weight"] + 1
-        else:
-            weight = 1
-        g.add_edge(from_user, to_user, type=edge_type, weight=weight)
+    if g.has_edge(from_user, to_user):
+        weights = g[from_user][to_user]
+    else:
+        g.add_edge(from_user, to_user)
+        weights = {
+            "weight":  0,
+            "retweet": 0,
+            "reply":   0,
+            "quote":   0,
+        }
+    weights["weight"]  += 1
+    weights[edge_type] += 1
+    g[from_user][to_user].update(weights)
 
-    elif nodes_type == "tweets" and to_id:
-        g.add_node(from_id, screen_name=from_user)
-        if to_user:
-            g.add_node(to_id, screen_name=to_user)
-        else:
-            g.add_node(to_id)
-        g.add_edge(from_id, to_id, type=edge_type)
 
-    elif nodes_type == "users" and to_user:
-        g.add_node(from_user, screen_name=from_user, start_date=created_at)
-        g.add_node(to_user, screen_name=to_user, start_date=created_at)
+def add_tweet_edge(g, from_user, from_id, to_user, to_id, edge_type, created_at):
+    g.add_node(from_id, screen_name=from_user, start_date=created_at)
+    g.add_node(to_id, screen_name=to_user, start_date=created_at)
 
-        if g.has_edge(from_user, to_user):
-            weights = g[from_user][to_user]
-        else:
-            g.add_edge(from_user, to_user)
-            weights = {
-                "weight":  0,
-                "retweet": 0,
-                "reply":   0,
-                "quote":   0,
-            }
-        weights["weight"]  += 1
-        weights[edge_type] += 1
-        g[from_user][to_user].update(weights)
+    g.add_edge(from_id, to_id, type=edge_type)
+
+
+def add_hashtag_edge(g, from_hashtag, to_hashtag, created_at):
+    g.add_node(from_hashtag, start_date=created_at)
+    g.add_node(to_hashtag, start_date=created_at)
+
+    if g.has_edge(from_hashtag, to_hashtag):
+        weight = g[from_hashtag][to_hashtag]["weight"] + 1
+    else:
+        weight = 1
+    g.add_edge(from_hashtag, to_hashtag, weight=weight)
 
 
 def to_json(g):
