@@ -26,11 +26,18 @@ from twarc import ensure_flattened
     default="users",
     help="What type of nodes to use in the network",
 )
+@click.option(
+    "--edges",
+    type=click.Choice(["retweet", "reply", "quote"]),
+    multiple=True,
+    default=["retweet", "reply", "quote"],
+    help="What type of edges to use in the network",
+)
 @click.option("--min-subgraph-size", type=int, help="Minimum subgraph size to include")
 @click.option("--max-subgraph-size", type=int, help="Maximum subgraph size to include")
 @click.argument("infile", type=click.File("r"), default="-")
 @click.argument("outfile", type=click.File("w"), default="-")
-def network(format, nodes, infile, outfile, min_subgraph_size, max_subgraph_size):
+def network(format, nodes, edges, infile, outfile, min_subgraph_size, max_subgraph_size):
     """
     Generates a network graph of tweets as GEXF, GML, DOT, JSON, HTML, CSV.
     """
@@ -40,9 +47,9 @@ def network(format, nodes, infile, outfile, min_subgraph_size, max_subgraph_size
     # we will need to use a regular graph and not a directed graph
 
     if min_subgraph_size or max_subgraph_size:
-        g = get_graph(infile, nodes, digraph=False)
+        g = get_graph(infile, nodes, edges, digraph=False)
     else:
-        g = get_graph(infile, nodes, digraph=True)
+        g = get_graph(infile, nodes, edges, digraph=True)
 
     # if the user wants to limit subgraph min/max sizes
     if min_subgraph_size or max_subgraph_size:
@@ -79,7 +86,7 @@ def network(format, nodes, infile, outfile, min_subgraph_size, max_subgraph_size
         outfile.write(html)
 
 
-def get_graph(infile, nodes_type, digraph=True):
+def get_graph(infile, nodes_type, edges_types, digraph=True):
     if digraph:
         g = networkx.DiGraph()
     else:
@@ -110,28 +117,31 @@ def get_graph(infile, nodes_type, digraph=True):
                 for ref in refs:
                     to_user = ref["author"]["username"]
                     edge_type = get_edge_type(ref)
-                    add_user_edge(
-                        g,
-                        from_user,
-                        to_user,
-                        edge_type,
-                        created_at_date,
-                    )
+                    if edge_type in edges_types:
+                        add_user_edge(
+                            g,
+                            from_user,
+                            to_user,
+                            edge_type,
+                            created_at_date,
+                            edges_types,
+                        )
 
             elif nodes_type == "tweets":
                 for ref in refs:
                     to_id = ref["id"]
                     to_user = ref["author"]["username"]
                     edge_type = get_edge_type(ref)
-                    add_tweet_edge(
-                        g,
-                        from_user,
-                        from_id,
-                        to_user,
-                        to_id,
-                        edge_type,
-                        created_at_date,
-                    )
+                    if edge_type in edges_types:
+                        add_tweet_edge(
+                            g,
+                            from_user,
+                            from_id,
+                            to_user,
+                            to_id,
+                            edge_type,
+                            created_at_date,
+                        )
 
             elif nodes_type == "hashtags":
 
@@ -156,7 +166,7 @@ def get_graph(infile, nodes_type, digraph=True):
     return g
 
 
-def add_user_edge(g, from_user, to_user, edge_type, created_at):
+def add_user_edge(g, from_user, to_user, edge_type, created_at, edges_types):
 
     # storing start_date will allow for timestamps for gephi timeline, where nodes
     # will appear on screen at their start date and stay on forever after
@@ -168,12 +178,7 @@ def add_user_edge(g, from_user, to_user, edge_type, created_at):
         weights = g[from_user][to_user]
     else:
         g.add_edge(from_user, to_user)
-        weights = {
-            "weight":  0,
-            "retweet": 0,
-            "reply":   0,
-            "quote":   0,
-        }
+        weights = {t: 0 for t in ("weight", ) + edges_types}
     weights["weight"]  += 1
     weights[edge_type] += 1
     g[from_user][to_user].update(weights)
