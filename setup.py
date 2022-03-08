@@ -13,7 +13,7 @@ setuptools.setup(
     description="Generate network visualizations for Twitter data",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    python_requires=">=3.3",
+    python_requires=">=3.5",
     install_requires=["twarc", "networkx", "pydot"],
     setup_data={"twarc_network": ["twarc_network/index.html"]},
     package_data={"twarc_network": ["index.html"]},
