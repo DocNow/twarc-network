@@ -199,18 +199,14 @@ def add_hashtag_edge(g, from_hashtag, to_hashtag, created_at):
 
 def to_json(g):
     j = {"nodes": [], "links": []}
-    for node_id, node_attrs in g.nodes(True):
-        j["nodes"].append(
-            {
-                "id": node_id,
-                "type": node_attrs.get("type"),
-                "screen_name": node_attrs.get("screen_name"),
-            }
-        )
+    for node_id, attrs in g.nodes(data=True):
+        node = {"id": node_id}
+        node.update(attrs)
+        j["nodes"].append(node)
     for source, target, attrs in g.edges(data=True):
-        j["links"].append(
-            {"source": source, "target": target, "type": attrs.get("type")}
-        )
+        link = {"source": source, "target": target}
+        link.update(attrs)
+        j["links"].append(link)
     return j
 
 
