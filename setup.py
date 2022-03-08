@@ -13,6 +13,10 @@ setuptools.setup(
     description="Generate network visualizations for Twitter data",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    license="MIT",
+    classifiers=[
+        "License :: OSI Approved :: MIT License",
+    ],
     python_requires=">=3.3",
     install_requires=["twarc", "networkx", "pydot"],
     setup_data={"twarc_network": ["twarc_network/index.html"]},
