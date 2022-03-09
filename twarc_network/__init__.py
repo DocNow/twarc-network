@@ -86,7 +86,7 @@ def network(format, nodes, edges, infile, outfile, min_subgraph_size, max_subgra
         outfile.write(html)
 
 
-def get_graph(infile, nodes_type, edges_types, digraph=True):
+def get_graph(infile, nodes_type, edge_types, digraph=True):
     if digraph:
         g = networkx.DiGraph()
     else:
@@ -117,14 +117,14 @@ def get_graph(infile, nodes_type, edges_types, digraph=True):
                 for ref in refs:
                     to_user = ref["author"]["username"]
                     edge_type = get_edge_type(ref)
-                    if edge_type in edges_types:
+                    if edge_type in edge_types:
                         add_user_edge(
                             g,
                             from_user,
                             to_user,
                             edge_type,
                             created_at_date,
-                            edges_types,
+                            edge_types,
                         )
 
             elif nodes_type == "tweets":
@@ -132,7 +132,7 @@ def get_graph(infile, nodes_type, edges_types, digraph=True):
                     to_id = ref["id"]
                     to_user = ref["author"]["username"]
                     edge_type = get_edge_type(ref)
-                    if edge_type in edges_types:
+                    if edge_type in edge_types:
                         add_tweet_edge(
                             g,
                             from_user,
@@ -166,7 +166,7 @@ def get_graph(infile, nodes_type, edges_types, digraph=True):
     return g
 
 
-def add_user_edge(g, from_user, to_user, edge_type, created_at, edges_types):
+def add_user_edge(g, from_user, to_user, edge_type, created_at, edge_types):
 
     # storing start_date will allow for timestamps for gephi timeline, where nodes
     # will appear on screen at their start date and stay on forever after
@@ -178,7 +178,7 @@ def add_user_edge(g, from_user, to_user, edge_type, created_at, edges_types):
         weights = g[from_user][to_user]
     else:
         g.add_edge(from_user, to_user)
-        weights = {t: 0 for t in ("weight", ) + edges_types}
+        weights = {t: 0 for t in ("weight", ) + edge_types}
     weights["weight"]  += 1
     weights[edge_type] += 1
     g[from_user][to_user].update(weights)
