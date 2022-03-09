@@ -95,6 +95,33 @@ larger than 10:
 
     twarc2 network tweets.jsonl tweets.html --maxsubgraph-size 10
 
+## Attributes
+
+The possible node attributes are the following:
+- `screen_name`:
+  When the node is a user, its username.
+  When the node is a tweet, the username of its author.
+- `start_date`:
+  The date of the first interaction that made the node appear in the graph.
+  For example, if the node is a retweet, it is its date of creation.
+  Or if the node is an original tweet,
+  it is the date of the first retweet, reply or quote.
+  The format is `dd/mm/yyyy hh:mm:ss`.
+
+The possible edge attributes are the following:
+- `type`: When the nodes are tweets, one of the following values:
+  `retweet`, `reply` or `quote`.
+- `retweet`: When the nodes are users,
+  the number of retweets the source has made to the target.
+- `reply`: When the nodes are users,
+  the number of replies the source has made to the target.
+- `quote`: When the nodes are users,
+  the number of quotes the source has made to the target.
+- `weight`:
+  When the nodes are users, the sum of `retweet`, `reply` and `quote`.
+  When the nodes are hashtags,
+  the number of tweets that contained both hashtags.
+
 [gexf]: https://gephi.org/gexf/format/
 [dot]: https://en.wikipedia.org/wiki/DOT_%28graph_description_language%29
 [d3]: https://d3js.org/
