@@ -78,15 +78,6 @@ def test_max_component():
 
 def test_tweets():
     result = runner.invoke(
-        network,
-        ["test-data/tweets.jsonl", "--format", "json", "--max-component-size", "15"],
-    )
-    graph = json.loads(result.output)
-    assert len(graph["nodes"]) == 313
-
-
-def test_tweets():
-    result = runner.invoke(
         network, ["test-data/tweets.jsonl", "--format", "json", "--nodes", "tweets"]
     )
     assert result.exit_code == 0
