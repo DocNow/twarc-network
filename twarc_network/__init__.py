@@ -42,19 +42,12 @@ def network(format, nodes, edges, infile, outfile, min_subgraph_size, max_subgra
     Generates a network graph of tweets as GEXF, GML, DOT, JSON, HTML, CSV.
     """
 
-    # unfortunately it's not possible to use connected_component_subgraphs
-    # with directed graphs, so if the user wants to limit subgraph size
-    # we will need to use a regular graph and not a directed graph
-
-    if min_subgraph_size or max_subgraph_size:
-        g = get_graph(infile, nodes, edges, digraph=False)
-    else:
-        g = get_graph(infile, nodes, edges, digraph=True)
+    g = get_graph(infile, nodes, edges)
 
     # if the user wants to limit subgraph min/max sizes
     if min_subgraph_size or max_subgraph_size:
         g_copy = g.copy()
-        for components in networkx.connected_components(g):
+        for components in networkx.weakly_connected_components(g):
             sg = g.subgraph(components)
             # for sg in networkx.connected_component_subgraphs(G):
             if min_subgraph_size and len(sg) < min_subgraph_size:
@@ -86,11 +79,8 @@ def network(format, nodes, edges, infile, outfile, min_subgraph_size, max_subgra
         outfile.write(html)
 
 
-def get_graph(infile, nodes_type, edge_types, digraph=True):
-    if digraph:
-        g = networkx.DiGraph()
-    else:
-        g = networkx.Graph()
+def get_graph(infile, nodes_type, edge_types):
+    g = networkx.DiGraph()
 
     for line in infile:
         for t in ensure_flattened(json.loads(line)):
