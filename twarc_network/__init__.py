@@ -112,12 +112,15 @@ def get_graph(infile, nodes_type, edge_types, digraph=True):
             if nodes_type == "users":
                 for ref in refs:
                     to_user = ref["author"]["username"]
+                    to_user_id = ref["author"]["id"]
                     edge_type = get_edge_type(ref)
                     if edge_type in edge_types:
                         add_user_edge(
                             g,
                             from_user,
+                            from_user_id,
                             to_user,
+                            to_user_id,
                             edge_type,
                             created_at_date,
                             edge_types,
@@ -127,13 +130,16 @@ def get_graph(infile, nodes_type, edge_types, digraph=True):
                 for ref in refs:
                     to_id = ref["id"]
                     to_user = ref["author"]["username"]
+                    to_user_id = ref["author"]["id"]
                     edge_type = get_edge_type(ref)
                     if edge_type in edge_types:
                         add_tweet_edge(
                             g,
                             from_user,
+                            from_user_id,
                             from_id,
                             to_user,
+                            to_user_id,
                             to_id,
                             edge_type,
                             created_at_date,
@@ -162,13 +168,24 @@ def get_graph(infile, nodes_type, edge_types, digraph=True):
     return g
 
 
-def add_user_edge(g, from_user, to_user, edge_type, created_at, edge_types):
+def add_user_edge(g, from_user, from_user_id, to_user, to_user_id, edge_type,
+                  created_at, edge_types):
 
     # storing start_date will allow for timestamps for gephi timeline, where nodes
     # will appear on screen at their start date and stay on forever after
 
-    g.add_node(from_user, screen_name=from_user, start_date=created_at)
-    g.add_node(to_user, screen_name=to_user, start_date=created_at)
+    g.add_node(
+        from_user,
+        screen_name=from_user,
+        user_id=from_user_id,
+        start_date=created_at,
+    )
+    g.add_node(
+        to_user,
+        screen_name=to_user,
+        user_id=to_user_id,
+        start_date=created_at,
+    )
 
     if g.has_edge(from_user, to_user):
         weights = g[from_user][to_user]
@@ -180,9 +197,20 @@ def add_user_edge(g, from_user, to_user, edge_type, created_at, edge_types):
     g[from_user][to_user].update(weights)
 
 
-def add_tweet_edge(g, from_user, from_id, to_user, to_id, edge_type, created_at):
-    g.add_node(from_id, screen_name=from_user, start_date=created_at)
-    g.add_node(to_id, screen_name=to_user, start_date=created_at)
+def add_tweet_edge(g, from_user, from_user_id, from_id, to_user, to_user_id,
+                   to_id, edge_type, created_at):
+    g.add_node(
+        from_id,
+        screen_name=from_user,
+        user_id=from_user_id,
+        start_date=created_at,
+    )
+    g.add_node(
+        to_id,
+        screen_name=to_user,
+        user_id=to_user_id,
+        start_date=created_at,
+    )
 
     g.add_edge(from_id, to_id, type=edge_type)
 

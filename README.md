@@ -101,6 +101,9 @@ The possible node attributes are the following:
 - `screen_name`:
   When the node is a user, its username.
   When the node is a tweet, the username of its author.
+- `user_id`:
+  When the node is a user, its id.
+  When the node is a tweet, the id of its author.
 - `start_date`:
   The date of the first interaction that made the node appear in the graph.
   For example, if the node is a retweet, it is its date of creation.
