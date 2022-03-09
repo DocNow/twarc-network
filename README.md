@@ -4,7 +4,7 @@
 
 [![Build Status](https://github.com/docnow/twarc-network/workflows/tests/badge.svg)](https://github.com/DocNow/twarc-network/actions/workflows/main.yml)
 
-*twarc-network* builds a reply, quote and retweet network from a file of tweets
+*twarc-network* builds a reply, quote, retweet and mention network from a file of tweets
 that you've collected using twarc. It will write out the network as a [gexf],
 [gml], [dot], json, csv or html file. It uses [networkx] for the graph model,
 [pydot] for dot output, and [d3] for the html presentation. 
@@ -69,8 +69,10 @@ can visualize a network where nodes are hashtags:
 ## Changing the Edges
 
 By default, when user and tweet graphs are built,
-all types of interactions (retweet, reply or quote) are used as edges,
-but you can also limit the types considered.
+all types of interactions are used as edges:
+Retweet, reply or quote in the case of tweets;
+retweet, reply, quote or mention in the case of users.
+But you can also limit the types considered.
 For example, if you only want retweet edges, you can:
 
     twarc2 network tweets.jsonl tweets.html --edges retweet
@@ -119,8 +121,10 @@ The possible edge attributes are the following:
   the number of replies the source has made to the target.
 - `quote`: When the nodes are users,
   the number of quotes the source has made to the target.
+- `mention`: When the nodes are users,
+  the number of mentions the source has made to the target.
 - `weight`:
-  When the nodes are users, the sum of `retweet`, `reply` and `quote`.
+  When the nodes are users, the sum of `retweet`, `reply`, `quote` and `mention`.
   When the nodes are hashtags,
   the number of tweets that contained both hashtags.
 
