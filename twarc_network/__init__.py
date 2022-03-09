@@ -100,10 +100,6 @@ def get_graph(infile, nodes_type, edge_types, digraph=True):
             from_user = t["author"]["username"]
             from_user_id = t["author"]["id"]
 
-            to_user = None
-            to_id = None
-            edge_type = None
-
             created_at_date = time.strftime(
                 "%d/%m/%Y %H:%M:%S",
                 time.strptime(t["created_at"], "%Y-%m-%dT%H:%M:%S.%fZ"),
