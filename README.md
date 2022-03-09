@@ -79,21 +79,20 @@ Or if you only want replies and quotes, you can:
 
     twarc2 network tweets.jsonl tweets.html --edges reply --edges quote
 
+## Component Sizes
 
-## Subgraph Sizes
-
-Depending on the data you are analyzing it can be helpful to remove subgraphs in
+Depending on the data you are analyzing it can be helpful to remove weakly connected components in
 the graph that are smaller than some number. For example if you don't want to
 visualize networks where two nodes are only connected to each other and not
 anyone else you can:
 
-    twarc2 network tweets.jsonl tweets.html --min-subgraph-size 3
+    twarc2 network tweets.jsonl tweets.html --min-component-size 3
 
 It's less common but you can also remove nodes that are part of too large
-subgraphs. For example if you wanted to remove any clusters of nodes that were
+subgraphs. For example if you wanted to remove any components that were
 larger than 10:
 
-    twarc2 network tweets.jsonl tweets.html --maxsubgraph-size 10
+    twarc2 network tweets.jsonl tweets.html --max-component-size 10
 
 ## Attributes
 

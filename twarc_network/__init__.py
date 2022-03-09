@@ -33,26 +33,25 @@ from twarc import ensure_flattened
     default=["retweet", "reply", "quote"],
     help="What type of edges to use in the network",
 )
-@click.option("--min-subgraph-size", type=int, help="Minimum subgraph size to include")
-@click.option("--max-subgraph-size", type=int, help="Maximum subgraph size to include")
+@click.option("--min-component-size", type=int, help="Minimum weakly connected component size to include")
+@click.option("--max-component-size", type=int, help="Maximum weakly connected component size to include")
 @click.argument("infile", type=click.File("r"), default="-")
 @click.argument("outfile", type=click.File("w"), default="-")
-def network(format, nodes, edges, infile, outfile, min_subgraph_size, max_subgraph_size):
+def network(format, nodes, edges, infile, outfile, min_component_size, max_component_size):
     """
     Generates a network graph of tweets as GEXF, GML, DOT, JSON, HTML, CSV.
     """
 
     g = get_graph(infile, nodes, edges)
 
-    # if the user wants to limit subgraph min/max sizes
-    if min_subgraph_size or max_subgraph_size:
+    # if the user wants to limit component min/max sizes
+    if min_component_size or max_component_size:
         g_copy = g.copy()
         for components in networkx.weakly_connected_components(g):
             sg = g.subgraph(components)
-            # for sg in networkx.connected_component_subgraphs(G):
-            if min_subgraph_size and len(sg) < min_subgraph_size:
+            if min_component_size and len(sg) < min_component_size:
                 g_copy.remove_nodes_from(sg.nodes())
-            elif max_subgraph_size and len(sg) > max_subgraph_size:
+            elif max_component_size and len(sg) > max_component_size:
                 g_copy.remove_nodes_from(sg.nodes())
         g = g_copy
 

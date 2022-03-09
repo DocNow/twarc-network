@@ -58,19 +58,19 @@ def test_csv():
     assert count == 391
 
 
-def test_min_subgraph():
+def test_min_component():
     result = runner.invoke(
         network,
-        ["test-data/tweets.jsonl", "--format", "json", "--min-subgraph-size", "4"],
+        ["test-data/tweets.jsonl", "--format", "json", "--min-component-size", "4"],
     )
     graph = json.loads(result.output)
     assert len(graph["nodes"]) == 285
 
 
-def test_max_subgraph():
+def test_max_component():
     result = runner.invoke(
         network,
-        ["test-data/tweets.jsonl", "--format", "json", "--max-subgraph-size", "15"],
+        ["test-data/tweets.jsonl", "--format", "json", "--max-component-size", "15"],
     )
     graph = json.loads(result.output)
     assert len(graph["nodes"]) == 313
@@ -79,7 +79,7 @@ def test_max_subgraph():
 def test_tweets():
     result = runner.invoke(
         network,
-        ["test-data/tweets.jsonl", "--format", "json", "--max-subgraph-size", "15"],
+        ["test-data/tweets.jsonl", "--format", "json", "--max-component-size", "15"],
     )
     graph = json.loads(result.output)
     assert len(graph["nodes"]) == 313
