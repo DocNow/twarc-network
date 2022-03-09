@@ -66,6 +66,20 @@ can visualize a network where nodes are hashtags:
 
     twarc2 network tweets.jsonl --nodes hashtags > network.html
 
+## Changing the Edges
+
+By default, when user and tweet graphs are built,
+all types of interactions (retweet, reply or quote) are used as edges,
+but you can also limit the types considered.
+For example, if you only want retweet edges, you can:
+
+    twarc2 network tweets.jsonl tweets.html --edges retweet
+
+Or if you only want replies and quotes, you can:
+
+    twarc2 network tweets.jsonl tweets.html --edges reply --edges quote
+
+
 ## Subgraph Sizes
 
 Depending on the data you are analyzing it can be helpful to remove subgraphs in
