@@ -28,9 +28,9 @@ from twarc import ensure_flattened
 )
 @click.option(
     "--edges",
-    type=click.Choice(["retweet", "reply", "quote"]),
+    type=click.Choice(["retweet", "reply", "quote", "mention"]),
     multiple=True,
-    default=["retweet", "reply", "quote"],
+    default=["retweet", "reply", "quote", "mention"],
     help="What type of edges to use in the network",
 )
 @click.option("--min-component-size", type=int, help="Minimum weakly connected component size to include")
@@ -111,6 +111,23 @@ def get_graph(infile, nodes_type, edge_types):
                             to_user,
                             to_user_id,
                             edge_type,
+                            created_at_date,
+                            edge_types,
+                        )
+                if "mention" in edge_types:
+                    mentions = t.get("entities", dict()).get("mentions", [])
+                    if is_first_mention_a_retweet(t):
+                        mentions = mentions[1:]
+                    for mention in mentions:
+                        to_user = mention["username"]
+                        to_user_id = mention["id"]
+                        add_user_edge(
+                            g,
+                            from_user,
+                            from_user_id,
+                            to_user,
+                            to_user_id,
+                            "mention",
                             created_at_date,
                             edge_types,
                         )
@@ -237,6 +254,20 @@ def get_edge_type(ref):
         return "quote"
     else:
         raise Exception(f'unknown reference type: {ref["type"]}')
+
+
+def is_first_mention_a_retweet(tweet):
+    if "referenced_tweets" not in tweet:
+        return False
+    if get_edge_type(tweet["referenced_tweets"][0]) != "retweet":
+        return False
+
+    if "entities" not in tweet or "mentions" not in tweet["entities"]:
+        return False
+    if tweet["entities"]["mentions"][0]["start"] != 3:
+        return False
+
+    return True
 
 
 def nxstr(f, *args, **kwargs):

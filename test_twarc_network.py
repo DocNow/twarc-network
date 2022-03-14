@@ -16,16 +16,16 @@ def test_html():
     m = re.search(r"var graph = ({.*});.*var link = ", result.output, re.DOTALL)
     assert m
     graph = json.loads(m.group(1))
-    assert len(graph["nodes"]) == 484
-    assert len(graph["links"]) == 391
+    assert len(graph["nodes"]) == 656
+    assert len(graph["links"]) == 618
 
 
 def test_json():
     result = runner.invoke(network, ["test-data/tweets.jsonl", "--format", "json"])
     assert result.exit_code == 0
     graph = json.loads(result.output)
-    assert len(graph["nodes"]) == 484
-    assert len(graph["links"]) == 391
+    assert len(graph["nodes"]) == 656
+    assert len(graph["links"]) == 618
 
 
 def test_gexf():
@@ -44,8 +44,8 @@ def test_dot():
     graphs = pydot.graph_from_dot_data(result.output)
     assert len(graphs) == 1
     graph = graphs[0]
-    assert len(graph.get_node_list()) == 485
-    assert len(graph.get_edge_list()) == 391
+    assert len(graph.get_node_list()) == 657
+    assert len(graph.get_edge_list()) == 618
 
 
 def test_csv():
@@ -55,7 +55,7 @@ def test_csv():
     count = 0
     for row in data:
         count += 1
-    assert count == 391
+    assert count == 618
 
 
 def test_min_component():
@@ -64,7 +64,7 @@ def test_min_component():
         ["test-data/tweets.jsonl", "--format", "json", "--min-component-size", "4"],
     )
     graph = json.loads(result.output)
-    assert len(graph["nodes"]) == 285
+    assert len(graph["nodes"]) == 469
 
 
 def test_max_component():
@@ -73,7 +73,7 @@ def test_max_component():
         ["test-data/tweets.jsonl", "--format", "json", "--max-component-size", "15"],
     )
     graph = json.loads(result.output)
-    assert len(graph["nodes"]) == 313
+    assert len(graph["nodes"]) == 355
 
 
 def test_tweets():
@@ -92,3 +92,17 @@ def test_hashtags():
     assert result.exit_code == 0
     graph = json.loads(result.output)
     assert len(graph["nodes"]) == 383
+
+
+def test_edges():
+    result = runner.invoke(
+        network,
+        [
+            "test-data/tweets.jsonl", "--format", "json", "--edges", "retweet",
+            "--edges", "reply", "--edges", "quote"
+        ]
+    )
+    assert result.exit_code == 0
+    graph = json.loads(result.output)
+    assert len(graph["nodes"]) == 484
+    assert len(graph["links"]) == 391
