@@ -100,10 +100,13 @@ larger than 10:
 
 The possible node attributes are the following:
 - `screen_name`:
-  When the node is a user, its username.
+  When the node is a user, its username;
+  by default, it is used as the label of the nodes.
   When the node is a tweet, the username of its author.
 - `user_id`:
-  When the node is a user, its id.
+  When the node is a user, its id;
+  if you want to use it as the label of the nodes,
+  you can use the flag `--id-as-label`.
   When the node is a tweet, the id of its author.
 - `start_date`:
   The date of the first interaction that made the node appear in the graph.

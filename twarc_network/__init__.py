@@ -35,14 +35,16 @@ from twarc import ensure_flattened
 )
 @click.option("--min-component-size", type=int, help="Minimum weakly connected component size to include")
 @click.option("--max-component-size", type=int, help="Maximum weakly connected component size to include")
+@click.option("--id-as-label", is_flag=True, help="Use user id as node label")
 @click.argument("infile", type=click.File("r"), default="-")
 @click.argument("outfile", type=click.File("w"), default="-")
-def network(format, nodes, edges, infile, outfile, min_component_size, max_component_size):
+def network(format, nodes, edges, infile, outfile, min_component_size,
+            max_component_size, id_as_label):
     """
     Generates a network graph of tweets as GEXF, GML, DOT, JSON, HTML, CSV.
     """
 
-    g = get_graph(infile, nodes, edges)
+    g = get_graph(infile, nodes, edges, id_as_label)
 
     # if the user wants to limit component min/max sizes
     if min_component_size or max_component_size:
@@ -78,7 +80,7 @@ def network(format, nodes, edges, infile, outfile, min_component_size, max_compo
         outfile.write(html)
 
 
-def get_graph(infile, nodes_type, edge_types):
+def get_graph(infile, nodes_type, edge_types, id_as_label):
     g = networkx.DiGraph()
 
     for line in infile:
@@ -113,6 +115,7 @@ def get_graph(infile, nodes_type, edge_types):
                             edge_type,
                             created_at_date,
                             edge_types,
+                            id_as_label,
                         )
                 if "mention" in edge_types:
                     mentions = t.get("entities", dict()).get("mentions", [])
@@ -130,6 +133,7 @@ def get_graph(infile, nodes_type, edge_types):
                             "mention",
                             created_at_date,
                             edge_types,
+                            id_as_label,
                         )
 
             elif nodes_type == "tweets":
@@ -175,32 +179,38 @@ def get_graph(infile, nodes_type, edge_types):
 
 
 def add_user_edge(g, from_user, from_user_id, to_user, to_user_id, edge_type,
-                  created_at, edge_types):
+                  created_at, edge_types, id_as_label):
 
     # storing start_date will allow for timestamps for gephi timeline, where nodes
     # will appear on screen at their start date and stay on forever after
 
+    if id_as_label:
+        from_label = from_user_id
+        to_label = to_user_id
+    else:
+        from_label = from_user
+        to_label = to_user
     g.add_node(
-        from_user,
+        from_label,
         screen_name=from_user,
         user_id=from_user_id,
         start_date=created_at,
     )
     g.add_node(
-        to_user,
+        to_label,
         screen_name=to_user,
         user_id=to_user_id,
         start_date=created_at,
     )
 
-    if g.has_edge(from_user, to_user):
-        weights = g[from_user][to_user]
+    if g.has_edge(from_label, to_label):
+        weights = g[from_label][to_label]
     else:
-        g.add_edge(from_user, to_user)
+        g.add_edge(from_label, to_label)
         weights = {t: 0 for t in ("weight", ) + edge_types}
     weights["weight"]  += 1
     weights[edge_type] += 1
-    g[from_user][to_user].update(weights)
+    g[from_label][to_label].update(weights)
 
 
 def add_tweet_edge(g, from_user, from_user_id, from_id, to_user, to_user_id,
