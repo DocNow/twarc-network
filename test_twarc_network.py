@@ -91,7 +91,7 @@ def test_hashtags():
     )
     assert result.exit_code == 0
     graph = json.loads(result.output)
-    assert len(graph["nodes"]) == 383
+    assert len(graph["nodes"]) == 352
 
 
 def test_edges():

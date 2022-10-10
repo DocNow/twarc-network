@@ -167,8 +167,8 @@ def get_graph(infile, nodes_type, edge_types, id_as_label):
                 for ht1, ht2 in hashtag_pairs:
                     add_hashtag_edge(
                         g,
-                        "#" + ht1,
-                        "#" + ht2,
+                        "#" + ht1.lower(),
+                        "#" + ht2.lower(),
                         created_at_date,
                     )
 

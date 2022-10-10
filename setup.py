@@ -5,7 +5,7 @@ with open("README.md") as f:
 
 setuptools.setup(
     name="twarc-network",
-    version="0.1.1",
+    version="0.2.0",
     url="https://github.com/docnow/twarc-network",
     author="Ed Summers",
     author_email="ehs@pobox.com",
