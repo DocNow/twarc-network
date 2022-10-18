@@ -6,7 +6,6 @@ import networkx
 import itertools
 
 from pathlib import Path
-from networkx import nx_pydot
 
 from twarc import ensure_flattened
 
@@ -15,7 +14,7 @@ from twarc import ensure_flattened
 @click.option(
     "--format",
     type=click.Choice(
-        ["html", "json", "gexf", "dot", "csv", "gml"], case_sensitive=False
+        ["html", "json", "gexf", "csv", "gml"], case_sensitive=False
     ),
     default="html",
     help="Output format for the network",
@@ -41,7 +40,7 @@ from twarc import ensure_flattened
 def network(format, nodes, edges, infile, outfile, min_component_size,
             max_component_size, id_as_label):
     """
-    Generates a network graph of tweets as GEXF, GML, DOT, JSON, HTML, CSV.
+    Generates a network graph of tweets as GEXF, GML, JSON, HTML, CSV.
     """
 
     g = get_graph(infile, nodes, edges, id_as_label)
@@ -62,9 +61,6 @@ def network(format, nodes, edges, infile, outfile, min_component_size,
 
     elif format == "gml":
         outfile.write(nxstr(networkx.write_gml, g))
-
-    elif format == "dot":
-        nx_pydot.write_dot(g, outfile)
 
     elif format == "json":
         json.dump(to_json(g), outfile, indent=2)

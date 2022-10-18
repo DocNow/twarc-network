@@ -6,12 +6,11 @@
 
 *twarc-network* builds a reply, quote, retweet and mention network from a file of tweets
 that you've collected using twarc. It will write out the network as a [gexf],
-[gml], [dot], json, csv or html file. It uses [networkx] for the graph model,
-[pydot] for dot output, and [d3] for the html presentation. 
+[gml], json, csv or html file. It uses [networkx] for the graph model and [d3] for the html presentation. 
 
 If you know CSS you can hack at the generated HTML file to modify the style to
 suit your needs. If you come up with a more pleasing representation please send
-a pull request! Exporting as a gexf, gml or dot file will allow you to import
+a pull request! Exporting as a gexf, or gml will allow you to import
 the data into tools like [Gephi], [Cytoscape] and [GraphViz] for further
 analysis and visualization.
 
@@ -32,10 +31,6 @@ First you will need to collect some data with [twarc]:
 Once you've got some data you can create the default D3 HTML visualization:
 
     twarc2 network tweets.jsonl network.html
-
-or [dot]:
-
-    twarc2 tweets.jsonl --format dot network.dot
 
 or [gexf]:
 
@@ -132,12 +127,10 @@ The possible edge attributes are the following:
   the number of tweets that contained both hashtags.
 
 [gexf]: https://gephi.org/gexf/format/
-[dot]: https://en.wikipedia.org/wiki/DOT_%28graph_description_language%29
 [d3]: https://d3js.org/
 [networkx]: https://networkx.org/
 [twarc]: https://github.com/docnow/twarc
 [gml]: https://en.wikipedia.org/wiki/Graph_Modelling_Language
-[pydot]: https://pypi.org/project/pydot/
 [Gephi]: https://gephi.org/
 [Cytoscape]: https://cytoscape.org/
 [GraphViz]: https://graphviz.org/

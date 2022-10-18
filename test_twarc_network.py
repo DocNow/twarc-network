@@ -2,7 +2,6 @@ import io
 import re
 import csv
 import json
-import pydot
 
 from twarc_network import network
 from click.testing import CliRunner
@@ -38,24 +37,11 @@ def test_gexf():
     assert result.exit_code == 0
 
 
-def test_dot():
-    result = runner.invoke(network, ["test-data/tweets.jsonl", "--format", "dot"])
-    assert result.exit_code == 0
-    graphs = pydot.graph_from_dot_data(result.output)
-    assert len(graphs) == 1
-    graph = graphs[0]
-    assert len(graph.get_node_list()) == 657
-    assert len(graph.get_edge_list()) == 618
-
-
 def test_csv():
     result = runner.invoke(network, ["test-data/tweets.jsonl", "--format", "csv"])
     assert result.exit_code == 0
     data = csv.reader(io.StringIO(result.output))
-    count = 0
-    for row in data:
-        count += 1
-    assert count == 618
+    assert len(list(data)) == 618
 
 
 def test_min_component():
