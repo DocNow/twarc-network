@@ -18,7 +18,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
     ],
     python_requires=">=3.3",
-    install_requires=["twarc", "networkx", "pydot>=1.4.2"],
+    install_requires=["twarc", "networkx>=2.6.3", "pydot>=1.4.2"],
     setup_data={"twarc_network": ["twarc_network/index.html"]},
     package_data={"twarc_network": ["index.html"]},
     setup_requires=["pytest-runner"],
